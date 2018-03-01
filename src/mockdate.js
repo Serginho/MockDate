@@ -10,6 +10,8 @@
     , now   = null
     ;
 
+  var baseTimestamp = null;
+
   function MockDate(y, m, d, h, M, s, ms) {
     var date;
 
@@ -17,7 +19,7 @@
 
       case 0:
         if (now !== null) {
-          date = new _Date(now);
+          date = new _Date(now());
         } else {
           date = new _Date();
         }
@@ -62,6 +64,8 @@
       throw new TypeError('mockdate: The time set is an invalid date: ' + date)
     }
 
+    baseTimestamp = _Date.now();
+
     if (typeof timezoneOffset === 'number') {
       MockDate.prototype.getTimezoneOffset = function() {
         return timezoneOffset;
@@ -73,7 +77,9 @@
       date = date.valueOf();
     }
 
-    now = dateObj.valueOf();
+    now = function() {
+      return dateObj.valueOf() + _Date.now() - baseTimestamp;
+    }
   }
 
   function reset() {
